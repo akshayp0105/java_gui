@@ -2,6 +2,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AttendanceCalculator extends JFrame {
     private JTextField subjectField;
@@ -11,6 +14,9 @@ public class AttendanceCalculator extends JFrame {
     private DefaultTableModel tableModel;
     private JTable subjectTable;
     private JLabel overallAttendanceLabel;
+    private JCheckBoxMenuItem autoSaveMenuItem;
+    private boolean autoSave = true;
+    private String databaseFile = "attendance_database.csv";
 
     public AttendanceCalculator() {
         setTitle("Attendance Calculator Pro");
@@ -21,11 +27,65 @@ public class AttendanceCalculator extends JFrame {
         // Header Panel
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(new Color(41, 128, 185));
-        JLabel titleLabel = new JLabel("Attendance Calculator & Tracker");
+        JLabel titleLabel = new JLabel("Attendance Calculator Pro");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(Color.WHITE);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         headerPanel.add(titleLabel);
+
+        // Menu Bar
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        JMenuItem saveMenu = new JMenuItem("Save");
+        saveMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        saveMenu.addActionListener(e -> saveData());
+        JMenuItem loadMenu = new JMenuItem("Load");
+        loadMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        loadMenu.addActionListener(e -> loadData());
+        JMenuItem exportMenu = new JMenuItem("Export as CSV");
+        exportMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        exportMenu.addActionListener(e -> exportCSV());
+        JMenuItem exitMenu = new JMenuItem("Exit");
+        exitMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        exitMenu.addActionListener(e -> System.exit(0));
+        fileMenu.add(saveMenu);
+        fileMenu.add(loadMenu);
+        fileMenu.add(exportMenu);
+        fileMenu.addSeparator();
+        fileMenu.add(exitMenu);
+
+        JMenu viewMenu = new JMenu("View");
+        viewMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        autoSaveMenuItem = new JCheckBoxMenuItem("Auto-save", autoSave);
+        autoSaveMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        autoSaveMenuItem.addActionListener(e -> autoSave = autoSaveMenuItem.isSelected());
+        viewMenu.add(autoSaveMenuItem);
+
+        JMenu helpMenu = new JMenu("Help");
+        helpMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        JMenuItem aboutMenu = new JMenuItem("About");
+        aboutMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        aboutMenu.addActionListener(e -> JOptionPane.showMessageDialog(this, "Attendance Calculator Pro v2.0\nMade by LOQ", "About", JOptionPane.INFORMATION_MESSAGE));
+        JMenuItem helpContentMenu = new JMenuItem("Help");
+        helpContentMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        helpContentMenu.addActionListener(e -> JOptionPane.showMessageDialog(this, "1. Enter subject name, total classes, attended classes, and required percentage.\n2. Click Calculate to add to the table.\n3. Status column shows if you're safe or need more classes.\n4. Use File menu to save/load or export data.", "Help", JOptionPane.INFORMATION_MESSAGE));
+        helpMenu.add(helpContentMenu);
+        helpMenu.add(aboutMenu);
+
+        menuBar.add(fileMenu);
+        menuBar.add(viewMenu);
+        menuBar.add(helpMenu);
+        setJMenuBar(menuBar);
+
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (autoSave && tableModel.getRowCount() > 0) {
+                    saveDataQuiet();
+                }
+            }
+        });
 
         // Top Panel for Inputs
         JPanel inputPanel = new JPanel(new GridBagLayout());
@@ -250,15 +310,128 @@ public class AttendanceCalculator extends JFrame {
             double overallPercent = ((double) totalAttendedAll / totalClassesAll) * 100;
             overallAttendanceLabel.setText(String.format("Overall Attendance: %.2f%% (%d / %d)", overallPercent, totalAttendedAll, totalClassesAll));
             
-            double required = 75.0; // Default fallback
+            double required = 75.0;
             try {
                 required = Double.parseDouble(requiredPercentageField.getText().trim());
             } catch (Exception ignored) {}
 
             if (overallPercent < required) {
-                overallAttendanceLabel.setForeground(new Color(192, 57, 43)); // Red
+                overallAttendanceLabel.setForeground(new Color(192, 57, 43));
             } else {
-                overallAttendanceLabel.setForeground(new Color(39, 174, 96)); // Green
+                overallAttendanceLabel.setForeground(new Color(39, 174, 96));
+            }
+        }
+    }
+
+    private void saveData() {
+        saveDataQuiet();
+        JOptionPane.showMessageDialog(this, "Data saved successfully!", "Save", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void saveDataQuiet() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(databaseFile))) {
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String subject = (String) tableModel.getValueAt(i, 0);
+                int total = (int) tableModel.getValueAt(i, 1);
+                int attended = (int) tableModel.getValueAt(i, 2);
+                String currentPct = (String) tableModel.getValueAt(i, 3);
+                String requiredPct = (String) tableModel.getValueAt(i, 4);
+                String status = (String) tableModel.getValueAt(i, 5);
+                pw.printf("%s,%d,%d,%s,%s,%s%n", escapeCsv(subject), total, attended, currentPct, requiredPct, escapeCsv(status));
+            }
+        } catch (IOException ex) {
+            if ( SwingUtilities.getWindowAncestor(this) != null ) {
+                JOptionPane.showMessageDialog(this, "Error saving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private String escapeCsv(String s) {
+        if (s.contains(",")) {
+            return "\"" + s.replace("\"", "\"\"") + "\"";
+        }
+        return s;
+    }
+
+    private void loadData() {
+        File file = new File(databaseFile);
+        if (!file.exists()) {
+            JOptionPane.showMessageDialog(this, "No saved data found.", "Load", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(this, "Loading will replace current data. Continue?", "Confirm Load", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        tableModel.setRowCount(0);
+        try (BufferedReader br = new BufferedReader(new FileReader(databaseFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                List<String> fields = parseCsvLine(line);
+                if (fields.size() >= 6) {
+                    tableModel.addRow(fields.toArray());
+                }
+            }
+            updateOverallAttendance();
+            JOptionPane.showMessageDialog(this, "Data loaded successfully!", "Load", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Error loading data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private List<String> parseCsvLine(String line) {
+        List<String> result = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        boolean inQuotes = false;
+        for (char c : line.toCharArray()) {
+            if (c == '"') {
+                if (inQuotes && sb.length() > 0 && sb.charAt(sb.length() - 1) == '"') {
+                    sb.append('"');
+                    inQuotes = false;
+                } else if (!inQuotes) {
+                    inQuotes = true;
+                } else {
+                    sb.append(c);
+                }
+            } else if (c == ',' && !inQuotes) {
+                result.add(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        result.add(sb.toString());
+        return result;
+    }
+
+    private void exportCSV() {
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No data to export.", "Export", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Export as CSV");
+        fileChooser.setSelectedFile(new File("attendance_export.csv"));
+        int userSelection = fileChooser.showSaveDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            if (!file.getName().toLowerCase().endsWith(".csv")) {
+                file = new File(file.getAbsolutePath() + ".csv");
+            }
+            try (PrintWriter pw = new PrintWriter(new FileWriter(file))) {
+                pw.println("Subject,Total,Attended,Current %,Required %,Status/Needed");
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    String subject = (String) tableModel.getValueAt(i, 0);
+                    int total = (int) tableModel.getValueAt(i, 1);
+                    int attended = (int) tableModel.getValueAt(i, 2);
+                    String currentPct = (String) tableModel.getValueAt(i, 3);
+                    String requiredPct = (String) tableModel.getValueAt(i, 4);
+                    String status = (String) tableModel.getValueAt(i, 5);
+                    pw.printf("%s,%d,%d,%s,%s,%s%n", escapeCsv(subject), total, attended, currentPct, requiredPct, escapeCsv(status));
+                }
+                JOptionPane.showMessageDialog(this, "Exported to: " + file.getAbsolutePath(), "Export", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error exporting data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
