@@ -173,6 +173,7 @@ public class AttendanceCalculator extends JFrame {
         subjectTable = new JTable(tableModel);
         subjectTable.setRowHeight(32);
         subjectTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        subjectTable.setRowSorter(new javax.swing.table.TableRowSorter<>(tableModel));
         subjectTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
         subjectTable.getTableHeader().setBackground(new Color(236, 240, 241));
         subjectTable.setSelectionBackground(new Color(189, 195, 199));
@@ -243,7 +244,8 @@ public class AttendanceCalculator extends JFrame {
         deleteButton.addActionListener(e -> {
             int selectedRow = subjectTable.getSelectedRow();
             if (selectedRow != -1) {
-                tableModel.removeRow(selectedRow);
+                int modelRow = subjectTable.convertRowIndexToModel(selectedRow);
+                tableModel.removeRow(modelRow);
                 updateOverallAttendance();
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a row to delete.", "Delete Error", JOptionPane.WARNING_MESSAGE);
