@@ -48,12 +48,16 @@ public class AttendanceCalculator extends JFrame {
         JMenuItem exportMenu = new JMenuItem("Export as CSV");
         exportMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         exportMenu.addActionListener(e -> exportCSV());
+        JMenuItem importMenu = new JMenuItem("Import from CSV");
+        importMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        importMenu.addActionListener(e -> importCSV());
         JMenuItem exitMenu = new JMenuItem("Exit");
         exitMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         exitMenu.addActionListener(e -> System.exit(0));
         fileMenu.add(saveMenu);
         fileMenu.add(loadMenu);
         fileMenu.add(exportMenu);
+        fileMenu.add(importMenu);
         fileMenu.addSeparator();
         fileMenu.add(exitMenu);
 
@@ -561,6 +565,31 @@ public class AttendanceCalculator extends JFrame {
                 JOptionPane.showMessageDialog(this, "Exported to: " + file.getAbsolutePath(), "Export", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this, "Error exporting data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void importCSV() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Import from CSV");
+        int userSelection = fileChooser.showOpenDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                int imported = 0;
+                while ((line = br.readLine()) != null) {
+                    if (line.trim().isEmpty()) continue;
+                    List<String> fields = parseCsvLine(line);
+                    if (fields.size() >= 6) {
+                        tableModel.addRow(fields.toArray());
+                        imported++;
+                    }
+                }
+                updateOverallAttendance();
+                JOptionPane.showMessageDialog(this, "Imported " + imported + " subjects successfully!", "Import", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error importing data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
