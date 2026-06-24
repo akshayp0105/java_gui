@@ -147,6 +147,18 @@ public class AttendanceCalculator extends JFrame {
                 exportCSV();
             }
         });
+        inputMap.put(KeyStroke.getKeyStroke("DELETE"), "deleteRow");
+        actionMap.put("deleteRow", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                int selectedRow = subjectTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int modelRow = subjectTable.convertRowIndexToModel(selectedRow);
+                    tableModel.removeRow(modelRow);
+                    updateOverallAttendance();
+                }
+            }
+        });
 
         // Top Panel for Inputs
         JPanel inputPanel = new JPanel(new GridBagLayout());
