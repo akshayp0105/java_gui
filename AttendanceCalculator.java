@@ -129,6 +129,7 @@ public class AttendanceCalculator extends JFrame {
         gbc.gridx = 0; gbc.gridy = 0; inputPanel.add(subLabel, gbc);
         subjectField = new JTextField(15);
         subjectField.setFont(fieldFont);
+        subjectField.setToolTipText("Enter the name of the subject");
         gbc.gridx = 1; gbc.gridy = 0; inputPanel.add(subjectField, gbc);
 
         JLabel totLabel = new JLabel("Total Classes:");
@@ -136,6 +137,7 @@ public class AttendanceCalculator extends JFrame {
         gbc.gridx = 2; gbc.gridy = 0; inputPanel.add(totLabel, gbc);
         totalClassesField = new JTextField(10);
         totalClassesField.setFont(fieldFont);
+        totalClassesField.setToolTipText("Total number of classes held");
         gbc.gridx = 3; gbc.gridy = 0; inputPanel.add(totalClassesField, gbc);
 
         JLabel attLabel = new JLabel("Attended Classes:");
@@ -143,6 +145,7 @@ public class AttendanceCalculator extends JFrame {
         gbc.gridx = 0; gbc.gridy = 1; inputPanel.add(attLabel, gbc);
         attendedClassesField = new JTextField(15);
         attendedClassesField.setFont(fieldFont);
+        attendedClassesField.setToolTipText("Number of classes you attended");
         gbc.gridx = 1; gbc.gridy = 1; inputPanel.add(attendedClassesField, gbc);
 
         JLabel reqLabel = new JLabel("Required %:");
@@ -150,6 +153,7 @@ public class AttendanceCalculator extends JFrame {
         gbc.gridx = 2; gbc.gridy = 1; inputPanel.add(reqLabel, gbc);
         requiredPercentageField = new JTextField("75", 10);
         requiredPercentageField.setFont(fieldFont);
+        requiredPercentageField.setToolTipText("Minimum attendance percentage required (default: 75%)");
         gbc.gridx = 3; gbc.gridy = 1; inputPanel.add(requiredPercentageField, gbc);
 
         JButton calculateButton = new JButton("Calculate & Add");
