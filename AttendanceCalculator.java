@@ -98,7 +98,16 @@ public class AttendanceCalculator extends JFrame {
         aboutMenu.addActionListener(e -> JOptionPane.showMessageDialog(this, "Attendance Calculator Pro v" + APP_VERSION + "\nMade by LOQ", "About", JOptionPane.INFORMATION_MESSAGE));
         JMenuItem helpContentMenu = new JMenuItem("Help");
         helpContentMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        helpContentMenu.addActionListener(e -> JOptionPane.showMessageDialog(this, "1. Enter subject name, total classes, attended classes, and required percentage.\n2. Click Calculate to add to the table.\n3. Status column shows if you're safe or need more classes.\n4. Use File menu to save/load or export data.", "Help", JOptionPane.INFORMATION_MESSAGE));
+        helpContentMenu.addActionListener(e -> JOptionPane.showMessageDialog(this, "Keyboard Shortcuts:\n"
+                + "Ctrl+S - Save | Ctrl+L - Load | Ctrl+E - Export | Ctrl+A - Select All\n"
+                + "Enter - Calculate | Click table headers to sort | Use Search field to filter\n\n"
+                + "How to use:\n"
+                + "1. Enter subject name, total classes, attended classes, and required percentage.\n"
+                + "2. Click Calculate (or press Enter) to add to the table.\n"
+                + "3. Status column shows if you're safe or need more classes.\n"
+                + "4. Use File menu to save/load or export/import data.\n"
+                + "5. Toggle Dark Mode from View menu.\n"
+                + "6. Use Search field to filter subjects in the table.", "Help", JOptionPane.INFORMATION_MESSAGE));
         helpMenu.add(helpContentMenu);
         helpMenu.add(aboutMenu);
 
