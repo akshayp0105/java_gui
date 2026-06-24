@@ -157,6 +157,20 @@ public class AttendanceCalculator extends JFrame {
         requiredPercentageField.setToolTipText("Minimum attendance percentage required (default: 75%)");
         gbc.gridx = 3; gbc.gridy = 1; inputPanel.add(requiredPercentageField, gbc);
 
+        // Enter key triggers calculate
+        java.awt.event.KeyListener enterKeyListener = new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                    calculateAndAdd();
+                }
+            }
+        };
+        subjectField.addKeyListener(enterKeyListener);
+        totalClassesField.addKeyListener(enterKeyListener);
+        attendedClassesField.addKeyListener(enterKeyListener);
+        requiredPercentageField.addKeyListener(enterKeyListener);
+
         JButton calculateButton = new JButton("Calculate & Add");
         calculateButton.setBackground(new Color(39, 174, 96));
         calculateButton.setForeground(Color.WHITE);
