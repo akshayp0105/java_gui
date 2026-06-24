@@ -16,6 +16,7 @@ public class AttendanceCalculator extends JFrame {
     private JLabel overallAttendanceLabel;
     private JCheckBoxMenuItem autoSaveMenuItem;
     private boolean autoSave = true;
+    private boolean darkMode = false;
     private String databaseFile = "attendance_database.csv";
 
     public AttendanceCalculator() {
@@ -61,6 +62,14 @@ public class AttendanceCalculator extends JFrame {
         autoSaveMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         autoSaveMenuItem.addActionListener(e -> autoSave = autoSaveMenuItem.isSelected());
         viewMenu.add(autoSaveMenuItem);
+
+        JCheckBoxMenuItem darkModeMenuItem = new JCheckBoxMenuItem("Dark Mode", false);
+        darkModeMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        darkModeMenuItem.addActionListener(e -> {
+            darkMode = darkModeMenuItem.isSelected();
+            applyDarkMode(darkMode);
+        });
+        viewMenu.add(darkModeMenuItem);
 
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -249,6 +258,33 @@ public class AttendanceCalculator extends JFrame {
                 updateOverallAttendance();
             }
         });
+    }
+
+    private void applyDarkMode(boolean dark) {
+        Color bg = dark ? new Color(43, 43, 43) : UIManager.getColor("Panel.background");
+        Color fg = dark ? Color.WHITE : Color.BLACK;
+        Color tableBg = dark ? new Color(55, 55, 55) : Color.WHITE;
+        Color tableFg = dark ? new Color(200, 200, 200) : Color.BLACK;
+        Color headerBg = dark ? new Color(60, 60, 60) : new Color(236, 240, 241);
+
+        getContentPane().setBackground(bg);
+        for (Component c : getContentPane().getComponents()) {
+            c.setBackground(bg);
+            c.setForeground(fg);
+            if (c instanceof JPanel) {
+                for (Component inner : ((JPanel) c).getComponents()) {
+                    inner.setBackground(bg);
+                    inner.setForeground(fg);
+                }
+            }
+        }
+        subjectTable.setBackground(tableBg);
+        subjectTable.setForeground(tableFg);
+        subjectTable.getTableHeader().setBackground(headerBg);
+        subjectTable.getTableHeader().setForeground(fg);
+        subjectTable.setGridColor(dark ? new Color(70, 70, 70) : new Color(200, 200, 200));
+        overallAttendanceLabel.setForeground(fg);
+        repaint();
     }
 
     private void calculateAndAdd() {
