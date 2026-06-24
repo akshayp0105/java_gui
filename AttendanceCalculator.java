@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AttendanceCalculator extends JFrame {
+    private static final String APP_VERSION = "2.1.0";
     private JTextField subjectField;
     private JTextField totalClassesField;
     private JTextField attendedClassesField;
@@ -20,7 +21,7 @@ public class AttendanceCalculator extends JFrame {
     private String databaseFile = "attendance_database.csv";
 
     public AttendanceCalculator() {
-        setTitle("Attendance Calculator Pro");
+        setTitle("Attendance Calculator Pro v" + APP_VERSION);
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -75,7 +76,7 @@ public class AttendanceCalculator extends JFrame {
         helpMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         JMenuItem aboutMenu = new JMenuItem("About");
         aboutMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        aboutMenu.addActionListener(e -> JOptionPane.showMessageDialog(this, "Attendance Calculator Pro v2.0\nMade by LOQ", "About", JOptionPane.INFORMATION_MESSAGE));
+        aboutMenu.addActionListener(e -> JOptionPane.showMessageDialog(this, "Attendance Calculator Pro v" + APP_VERSION + "\nMade by LOQ", "About", JOptionPane.INFORMATION_MESSAGE));
         JMenuItem helpContentMenu = new JMenuItem("Help");
         helpContentMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         helpContentMenu.addActionListener(e -> JOptionPane.showMessageDialog(this, "1. Enter subject name, total classes, attended classes, and required percentage.\n2. Click Calculate to add to the table.\n3. Status column shows if you're safe or need more classes.\n4. Use File menu to save/load or export data.", "Help", JOptionPane.INFORMATION_MESSAGE));
