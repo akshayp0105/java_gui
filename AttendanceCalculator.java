@@ -249,8 +249,16 @@ public class AttendanceCalculator extends JFrame {
         overallAttendanceLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         overallAttendanceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
+        JLabel statsLabel = new JLabel("Subjects: 0 | Highest: 0% | Lowest: 0% | Avg: 0%");
+        statsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        statsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        JPanel summaryPanel = new JPanel(new BorderLayout());
+        summaryPanel.add(overallAttendanceLabel, BorderLayout.NORTH);
+        summaryPanel.add(statsLabel, BorderLayout.SOUTH);
+
         bottomPanel.add(actionPanel, BorderLayout.WEST);
-        bottomPanel.add(overallAttendanceLabel, BorderLayout.EAST);
+        bottomPanel.add(summaryPanel, BorderLayout.EAST);
 
         // Main Layout wrapper
         JPanel mainContent = new JPanel(new BorderLayout(15, 15));
@@ -379,17 +387,38 @@ public class AttendanceCalculator extends JFrame {
         int totalClassesAll = 0;
         int totalAttendedAll = 0;
         
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
+        // Find statsLabel - it's the second label in summaryPanel
+        JLabel statsLabel = null;
+        if (bottomPanel.getComponent(1) instanceof JPanel) {
+            JPanel summaryPanel = (JPanel) bottomPanel.getComponent(1);
+            if (summaryPanel.getComponentCount() > 1 && summaryPanel.getComponent(1) instanceof JLabel) {
+                statsLabel = (JLabel) summaryPanel.getComponent(1);
+            }
+        }
+
+        double highestPct = 0, lowestPct = 100, totalPct = 0;
+        int rowCount = tableModel.getRowCount();
+        
+        for (int i = 0; i < rowCount; i++) {
             totalClassesAll += (int) tableModel.getValueAt(i, 1);
             totalAttendedAll += (int) tableModel.getValueAt(i, 2);
+            double pct = ((double) (int) tableModel.getValueAt(i, 2) / (int) tableModel.getValueAt(i, 1)) * 100;
+            if (pct > highestPct) highestPct = pct;
+            if (pct < lowestPct) lowestPct = pct;
+            totalPct += pct;
         }
 
         if (totalClassesAll == 0) {
             overallAttendanceLabel.setText("Overall Attendance: 0.00% (0 / 0)");
             overallAttendanceLabel.setForeground(Color.BLACK);
+            if (statsLabel != null) statsLabel.setText("Subjects: 0 | Highest: 0% | Lowest: 0% | Avg: 0%");
         } else {
             double overallPercent = ((double) totalAttendedAll / totalClassesAll) * 100;
             overallAttendanceLabel.setText(String.format("Overall Attendance: %.2f%% (%d / %d)", overallPercent, totalAttendedAll, totalClassesAll));
+            double avgPct = totalPct / rowCount;
+            if (statsLabel != null) {
+                statsLabel.setText(String.format("Subjects: %d | Highest: %.2f%% | Lowest: %.2f%% | Avg: %.2f%%", rowCount, highestPct, lowestPct, avgPct));
+            }
             
             double required = 75.0;
             try {
