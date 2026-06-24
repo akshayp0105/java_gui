@@ -309,6 +309,21 @@ public class AttendanceCalculator extends JFrame {
         add(headerPanel, BorderLayout.NORTH);
         add(mainContent, BorderLayout.CENTER);
 
+        // Status bar
+        JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 2));
+        statusBar.setBackground(new Color(41, 128, 185));
+        JLabel statusTimeLabel = new JLabel();
+        statusTimeLabel.setForeground(Color.WHITE);
+        statusTimeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        statusBar.add(statusTimeLabel);
+        add(statusBar, BorderLayout.SOUTH);
+
+        javax.swing.Timer clockTimer = new javax.swing.Timer(1000, e -> {
+            statusTimeLabel.setText("Date: " + java.time.LocalDate.now() + " | Time: " + java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")));
+        });
+        clockTimer.start();
+        statusTimeLabel.setText("Date: " + java.time.LocalDate.now() + " | Time: " + java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")));
+
         // Action Listeners
         calculateButton.addActionListener(e -> calculateAndAdd());
         
