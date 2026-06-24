@@ -78,6 +78,24 @@ public class AttendanceCalculator extends JFrame {
         menuBar.add(helpMenu);
         setJMenuBar(menuBar);
 
+        // Keyboard shortcuts
+        InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = rootPane.getActionMap();
+        inputMap.put(KeyStroke.getKeyStroke("control S"), "save");
+        actionMap.put("save", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                saveData();
+            }
+        });
+        inputMap.put(KeyStroke.getKeyStroke("control L"), "load");
+        actionMap.put("load", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                loadData();
+            }
+        });
+
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
