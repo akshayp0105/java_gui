@@ -198,6 +198,31 @@ public class AttendanceCalculator extends JFrame {
         JScrollPane scrollPane = new JScrollPane(subjectTable);
         scrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Subject Details", 0, 0, new Font("Segoe UI", Font.BOLD, 12)));
 
+        // Filter/search panel
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+        filterPanel.add(new JLabel("Search:"));
+        JTextField searchField = new JTextField(20);
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        filterPanel.add(searchField);
+        searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void filter() {
+                String query = searchField.getText().trim().toLowerCase();
+                javax.swing.table.TableRowSorter<DefaultTableModel> sorter = (javax.swing.table.TableRowSorter<DefaultTableModel>) subjectTable.getRowSorter();
+                if (query.isEmpty()) {
+                    sorter.setRowFilter(null);
+                } else {
+                    sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + query));
+                }
+            }
+            @Override public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+            @Override public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+            @Override public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+        });
+
+        JPanel tableWrapper = new JPanel(new BorderLayout());
+        tableWrapper.add(filterPanel, BorderLayout.NORTH);
+        tableWrapper.add(scrollPane, BorderLayout.CENTER);
+
         // Bottom Panel for actions and summary
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -231,7 +256,7 @@ public class AttendanceCalculator extends JFrame {
         JPanel mainContent = new JPanel(new BorderLayout(15, 15));
         mainContent.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         mainContent.add(inputPanel, BorderLayout.NORTH);
-        mainContent.add(scrollPane, BorderLayout.CENTER);
+        mainContent.add(tableWrapper, BorderLayout.CENTER);
         mainContent.add(bottomPanel, BorderLayout.SOUTH);
 
         setLayout(new BorderLayout());
