@@ -23,6 +23,7 @@ public class AttendanceCalculator extends JFrame {
     public AttendanceCalculator() {
         setTitle("Attendance Calculator Pro v" + APP_VERSION);
         setSize(900, 600);
+        setMinimumSize(new Dimension(700, 450));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
