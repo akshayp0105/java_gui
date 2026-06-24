@@ -24,8 +24,22 @@ public class AttendanceCalculator extends JFrame {
         setTitle("Attendance Calculator Pro v" + APP_VERSION);
         setSize(900, 600);
         setMinimumSize(new Dimension(700, 450));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (tableModel.getRowCount() > 0) {
+                    int confirm = JOptionPane.showConfirmDialog(null, "Do you want to exit? Unsaved changes may be lost.", "Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        if (autoSave) saveDataQuiet();
+                        System.exit(0);
+                    }
+                } else {
+                    System.exit(0);
+                }
+            }
+        });
 
         // Header Panel
         JPanel headerPanel = new JPanel();
@@ -122,15 +136,6 @@ public class AttendanceCalculator extends JFrame {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 exportCSV();
-            }
-        });
-
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                if (autoSave && tableModel.getRowCount() > 0) {
-                    saveDataQuiet();
-                }
             }
         });
 
