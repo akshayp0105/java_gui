@@ -110,6 +110,20 @@ public class AttendanceCalculator extends JFrame {
                 loadData();
             }
         });
+        inputMap.put(KeyStroke.getKeyStroke("control A"), "selectAll");
+        actionMap.put("selectAll", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                subjectTable.selectAll();
+            }
+        });
+        inputMap.put(KeyStroke.getKeyStroke("control E"), "export");
+        actionMap.put("export", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                exportCSV();
+            }
+        });
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
