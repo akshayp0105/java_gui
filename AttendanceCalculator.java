@@ -291,6 +291,36 @@ public class AttendanceCalculator extends JFrame {
         JScrollPane scrollPane = new JScrollPane(subjectTable);
         scrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Subject Details", 0, 0, new Font("Segoe UI", Font.BOLD, 12)));
 
+        JPopupMenu tableContextMenu = new JPopupMenu();
+        JMenuItem ctxDelete = new JMenuItem("Delete Selected Row");
+        ctxDelete.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        ctxDelete.addActionListener(e -> {
+            int selectedRow = subjectTable.getSelectedRow();
+            if (selectedRow != -1) {
+                int modelRow = subjectTable.convertRowIndexToModel(selectedRow);
+                tableModel.removeRow(modelRow);
+                updateOverallAttendance();
+            }
+        });
+        JMenuItem ctxClearAll = new JMenuItem("Clear All Rows");
+        ctxClearAll.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        ctxClearAll.addActionListener(e -> {
+            if (tableModel.getRowCount() == 0) return;
+            int confirm = JOptionPane.showConfirmDialog(null, "Clear all rows?", "Confirm", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                tableModel.setRowCount(0);
+                updateOverallAttendance();
+            }
+        });
+        JMenuItem ctxExport = new JMenuItem("Export as CSV");
+        ctxExport.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        ctxExport.addActionListener(e -> exportCSV());
+        tableContextMenu.add(ctxDelete);
+        tableContextMenu.add(ctxClearAll);
+        tableContextMenu.addSeparator();
+        tableContextMenu.add(ctxExport);
+        subjectTable.setComponentPopupMenu(tableContextMenu);
+
         // Filter/search panel
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
         filterPanel.add(new JLabel("Search:"));
