@@ -198,6 +198,13 @@ public class AttendanceCalculator extends JFrame {
                 subjectField.requestFocus();
             }
         });
+        inputMap.put(KeyStroke.getKeyStroke("control P"), "printTable");
+        actionMap.put("printTable", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                printAttendanceTable();
+            }
+        });
 
         // Top Panel for Inputs
         JPanel inputPanel = new JPanel(new GridBagLayout());
@@ -584,6 +591,18 @@ public class AttendanceCalculator extends JFrame {
             } else {
                 overallAttendanceLabel.setForeground(new Color(39, 174, 96));
             }
+        }
+    }
+
+    private void printAttendanceTable() {
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No data to print.", "Print", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            subjectTable.print(JTable.PrintMode.FIT_WIDTH);
+        } catch (java.awt.print.PrinterException ex) {
+            JOptionPane.showMessageDialog(this, "Printing failed: " + ex.getMessage(), "Print Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
