@@ -418,6 +418,10 @@ public class AttendanceCalculator extends JFrame {
         // Status bar
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 2));
         statusBar.setBackground(new Color(52, 152, 219));
+        JLabel rowCountLabel = new JLabel("Rows: 0");
+        rowCountLabel.setForeground(Color.WHITE);
+        rowCountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        statusBar.add(rowCountLabel);
         JLabel statusTimeLabel = new JLabel();
         statusTimeLabel.setForeground(Color.WHITE);
         statusTimeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -472,9 +476,10 @@ public class AttendanceCalculator extends JFrame {
                 for (Component inner : ((JPanel) c).getComponents()) {
                     inner.setBackground(bg);
                     inner.setForeground(fg);
-                }
             }
         }
+        rowCountLabel.setText("Rows: " + tableModel.getRowCount());
+    }
         subjectTable.setBackground(tableBg);
         subjectTable.setForeground(tableFg);
         subjectTable.getTableHeader().setBackground(headerBg);
