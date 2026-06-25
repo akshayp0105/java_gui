@@ -187,6 +187,17 @@ public class AttendanceCalculator extends JFrame {
                         + "6. Use Search field to filter subjects in the table.", "Help - Attendance Calculator Pro", JOptionPane.INFORMATION_MESSAGE);
             }
         });
+        inputMap.put(KeyStroke.getKeyStroke("control N"), "newSubject");
+        actionMap.put("newSubject", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                subjectField.setText("");
+                totalClassesField.setText("");
+                attendedClassesField.setText("");
+                requiredPercentageField.setText("75");
+                subjectField.requestFocus();
+            }
+        });
 
         // Top Panel for Inputs
         JPanel inputPanel = new JPanel(new GridBagLayout());
