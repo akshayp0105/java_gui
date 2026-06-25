@@ -147,6 +147,17 @@ public class AttendanceCalculator extends JFrame {
                 exportCSV();
             }
         });
+        inputMap.put(KeyStroke.getKeyStroke("control R"), "resetFields");
+        actionMap.put("resetFields", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                subjectField.setText("");
+                totalClassesField.setText("");
+                attendedClassesField.setText("");
+                requiredPercentageField.setText("75");
+                subjectField.requestFocus();
+            }
+        });
         inputMap.put(KeyStroke.getKeyStroke("DELETE"), "deleteRow");
         actionMap.put("deleteRow", new AbstractAction() {
             @Override
