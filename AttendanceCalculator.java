@@ -759,7 +759,26 @@ public class AttendanceCalculator extends JFrame {
         }
 
         SwingUtilities.invokeLater(() -> {
-            new AttendanceCalculator().setVisible(true);
+            AttendanceCalculator app = new AttendanceCalculator();
+            java.awt.Image icon = createAppIcon();
+            if (icon != null) app.setIconImage(icon);
+            app.setVisible(true);
+            app.toFront();
+            app.requestFocus();
+            app.setState(java.awt.Frame.NORMAL);
         });
+    }
+
+    private static java.awt.Image createAppIcon() {
+        java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(32, 32, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+        java.awt.Graphics2D g2d = img.createGraphics();
+        g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setColor(new Color(52, 152, 219));
+        g2d.fillRoundRect(0, 0, 32, 32, 6, 6);
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        g2d.drawString("A", 9, 24);
+        g2d.dispose();
+        return img;
     }
 }
