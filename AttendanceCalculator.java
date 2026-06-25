@@ -233,6 +233,7 @@ public class AttendanceCalculator extends JFrame {
         calculateButton.setFocusPainted(false);
         calculateButton.setFont(new Font("Segoe UI", Font.BOLD, 15));
         calculateButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        calculateButton.setToolTipText("Calculate attendance and add subject to table (Enter)");
         gbc.gridx = 1; gbc.gridy = 2; gbc.gridwidth = 2; 
         gbc.insets = new Insets(15, 5, 5, 5);
         inputPanel.add(calculateButton, gbc);
@@ -309,6 +310,7 @@ public class AttendanceCalculator extends JFrame {
         deleteButton.setFocusPainted(false);
         deleteButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
         deleteButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        deleteButton.setToolTipText("Delete the selected row from table (Delete key)");
         
         JButton clearButton = new JButton("Clear All");
         clearButton.setBackground(new Color(149, 165, 166));
@@ -316,6 +318,7 @@ public class AttendanceCalculator extends JFrame {
         clearButton.setFocusPainted(false);
         clearButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
         clearButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        clearButton.setToolTipText("Clear all subjects from the table");
 
         actionPanel.add(deleteButton);
         actionPanel.add(clearButton);
