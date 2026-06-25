@@ -428,9 +428,12 @@ public class AttendanceCalculator extends JFrame {
         deleteButton.addActionListener(e -> {
             int selectedRow = subjectTable.getSelectedRow();
             if (selectedRow != -1) {
-                int modelRow = subjectTable.convertRowIndexToModel(selectedRow);
-                tableModel.removeRow(modelRow);
-                updateOverallAttendance();
+                int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this row?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    int modelRow = subjectTable.convertRowIndexToModel(selectedRow);
+                    tableModel.removeRow(modelRow);
+                    updateOverallAttendance();
+                }
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a row to delete.", "Delete Error", JOptionPane.WARNING_MESSAGE);
             }
