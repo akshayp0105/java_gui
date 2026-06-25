@@ -43,7 +43,7 @@ public class AttendanceCalculator extends JFrame {
 
         // Header Panel
         JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(new Color(41, 128, 185));
+        headerPanel.setBackground(new Color(52, 152, 219));
         JLabel titleLabel = new JLabel("Attendance Calculator Pro");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(Color.WHITE);
@@ -417,7 +417,7 @@ public class AttendanceCalculator extends JFrame {
 
         // Status bar
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 2));
-        statusBar.setBackground(new Color(41, 128, 185));
+        statusBar.setBackground(new Color(52, 152, 219));
         JLabel statusTimeLabel = new JLabel();
         statusTimeLabel.setForeground(Color.WHITE);
         statusTimeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
