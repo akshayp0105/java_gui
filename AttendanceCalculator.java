@@ -170,6 +170,23 @@ public class AttendanceCalculator extends JFrame {
                 }
             }
         });
+        inputMap.put(KeyStroke.getKeyStroke("F1"), "showHelp");
+        actionMap.put("showHelp", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Keyboard Shortcuts:\n"
+                        + "Ctrl+S - Save | Ctrl+L - Load | Ctrl+E - Export | Ctrl+A - Select All\n"
+                        + "Ctrl+R - Reset Fields | Ctrl+N - New Subject | F1 - Help | Delete - Remove Row\n"
+                        + "Enter - Calculate | Click table headers to sort | Use Search field to filter\n\n"
+                        + "How to use:\n"
+                        + "1. Enter subject name, total classes, attended classes, and required percentage.\n"
+                        + "2. Click Calculate (or press Enter) to add to the table.\n"
+                        + "3. Status column shows if you're safe or need more classes.\n"
+                        + "4. Use File menu to save/load or export/import data.\n"
+                        + "5. Toggle Dark Mode from View menu.\n"
+                        + "6. Use Search field to filter subjects in the table.", "Help - Attendance Calculator Pro", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
 
         // Top Panel for Inputs
         JPanel inputPanel = new JPanel(new GridBagLayout());
