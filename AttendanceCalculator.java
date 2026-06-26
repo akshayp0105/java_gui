@@ -113,6 +113,17 @@ public class AttendanceCalculator extends JFrame {
         weeklyTracker.addActionListener(e -> showWeeklySummary());
         viewMenu.add(weeklyTracker);
 
+        JMenuItem themeColorItem = new JMenuItem("Change Theme Color");
+        themeColorItem.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        themeColorItem.addActionListener(e -> {
+            Color chosen = JColorChooser.showDialog(this, "Choose Theme Color", new Color(52, 152, 219));
+            if (chosen != null) {
+                headerPanel.setBackground(chosen);
+                statusBar.setBackground(chosen);
+            }
+        });
+        viewMenu.add(themeColorItem);
+
         inputMap.put(KeyStroke.getKeyStroke("UP"), "prevField");
         actionMap.put("prevField", new AbstractAction() {
             @Override
