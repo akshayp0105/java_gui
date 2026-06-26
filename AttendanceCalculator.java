@@ -299,17 +299,28 @@ public class AttendanceCalculator extends JFrame {
         subjectTable.getTableHeader().setBackground(new Color(236, 240, 241));
         subjectTable.setSelectionBackground(new Color(189, 195, 199));
 
-        // Custom renderer for row colors
+        // Custom renderer for row colors based on attendance percentage
         subjectTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (!isSelected) {
-                    String status = (String) table.getModel().getValueAt(row, 5);
-                    if (status.startsWith("Alert")) {
-                        c.setBackground(new Color(255, 230, 230)); // Light red
-                    } else {
-                        c.setBackground(new Color(230, 255, 230)); // Light green
+                    String currentPctStr = (String) table.getModel().getValueAt(row, 3);
+                    try {
+                        double pct = Double.parseDouble(currentPctStr.replace("%", ""));
+                        if (pct >= 90) {
+                            c.setBackground(new Color(200, 240, 200)); // Dark green - Excellent
+                        } else if (pct >= 75) {
+                            c.setBackground(new Color(230, 255, 230)); // Light green - Good
+                        } else if (pct >= 60) {
+                            c.setBackground(new Color(255, 255, 200)); // Light yellow - Warning
+                        } else if (pct >= 50) {
+                            c.setBackground(new Color(255, 220, 180)); // Light orange - Danger
+                        } else {
+                            c.setBackground(new Color(255, 200, 200)); // Light red - Critical
+                        }
+                    } catch (Exception e) {
+                        c.setBackground(Color.WHITE);
                     }
                 }
                 return c;
