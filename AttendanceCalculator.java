@@ -295,6 +295,15 @@ public class AttendanceCalculator extends JFrame {
         requiredPercentageField.setToolTipText("Minimum attendance percentage required (default: 75%)");
         gbc.gridx = 3; gbc.gridy = 1; inputPanel.add(requiredPercentageField, gbc);
 
+        JLabel catLabel = new JLabel("Category:");
+        catLabel.setFont(labelFont);
+        gbc.gridx = 0; gbc.gridy = 2; inputPanel.add(catLabel, gbc);
+        String[] categories = {"Core", "Elective", "Lab", "Theory", "Other"};
+        JComboBox<String> categoryCombo = new JComboBox<>(categories);
+        categoryCombo.setFont(fieldFont);
+        categoryCombo.setToolTipText("Select subject category for grouping");
+        gbc.gridx = 1; gbc.gridy = 2; inputPanel.add(categoryCombo, gbc);
+
         // Enter key triggers calculate
         java.awt.event.KeyListener enterKeyListener = new java.awt.event.KeyAdapter() {
             @Override
@@ -321,7 +330,7 @@ public class AttendanceCalculator extends JFrame {
         inputPanel.add(calculateButton, gbc);
 
         // Center Panel for Table
-        String[] columns = {"Subject", "Total", "Attended", "Current %", "Required %", "Status / Needed", "Trend"};
+        String[] columns = {"Subject", "Total", "Attended", "Current %", "Required %", "Status / Needed", "Trend", "Category"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -725,7 +734,8 @@ public class AttendanceCalculator extends JFrame {
                     currentPercentageStr,
                     String.format("%.0f%%", required),
                     status,
-                    trend
+                    trend,
+                    categoryCombo.getSelectedItem()
             };
             saveUndoState();
             tableModel.addRow(row);
