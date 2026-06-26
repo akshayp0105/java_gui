@@ -482,12 +482,22 @@ public class AttendanceCalculator extends JFrame {
         overallAttendanceLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         overallAttendanceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
+        JProgressBar attendanceBar = new JProgressBar(0, 100);
+        attendanceBar.setValue(0);
+        attendanceBar.setStringPainted(true);
+        attendanceBar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        attendanceBar.setPreferredSize(new Dimension(200, 25));
+        attendanceBar.setForeground(new Color(39, 174, 96));
+
         JLabel statsLabel = new JLabel("Subjects: 0 | Highest: 0% | Lowest: 0% | Avg: 0%");
         statsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         statsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        JPanel summaryPanel = new JPanel(new BorderLayout());
-        summaryPanel.add(overallAttendanceLabel, BorderLayout.NORTH);
+        JPanel summaryPanel = new JPanel(new BorderLayout(5, 5));
+        JPanel topSummary = new JPanel(new BorderLayout());
+        topSummary.add(overallAttendanceLabel, BorderLayout.NORTH);
+        topSummary.add(attendanceBar, BorderLayout.SOUTH);
+        summaryPanel.add(topSummary, BorderLayout.NORTH);
         summaryPanel.add(statsLabel, BorderLayout.SOUTH);
 
         bottomPanel.add(actionPanel, BorderLayout.WEST);
@@ -746,9 +756,13 @@ public class AttendanceCalculator extends JFrame {
             overallAttendanceLabel.setText("Overall Attendance: 0.00% (0 / 0)");
             overallAttendanceLabel.setForeground(Color.BLACK);
             if (statsLabel != null) statsLabel.setText("Subjects: 0 | Highest: 0% | Lowest: 0% | Avg: 0%");
+            attendanceBar.setValue(0);
+            attendanceBar.setString("0%");
         } else {
             double overallPercent = ((double) totalAttendedAll / totalClassesAll) * 100;
             overallAttendanceLabel.setText(String.format("Overall Attendance: %.2f%% (%d / %d)", overallPercent, totalAttendedAll, totalClassesAll));
+            attendanceBar.setValue((int) overallPercent);
+            attendanceBar.setString(String.format("%.1f%%", overallPercent));
             double avgPct = totalPct / rowCount;
             if (statsLabel != null) {
                 statsLabel.setText(String.format("Subjects: %d | Highest: %.2f%% | Lowest: %.2f%% | Avg: %.2f%%", rowCount, highestPct, lowestPct, avgPct));
@@ -761,8 +775,10 @@ public class AttendanceCalculator extends JFrame {
 
             if (overallPercent < required) {
                 overallAttendanceLabel.setForeground(new Color(192, 57, 43));
+                attendanceBar.setForeground(new Color(192, 57, 43));
             } else {
                 overallAttendanceLabel.setForeground(new Color(39, 174, 96));
+                attendanceBar.setForeground(new Color(39, 174, 96));
             }
         }
     }
