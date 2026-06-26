@@ -406,8 +406,17 @@ public class AttendanceCalculator extends JFrame {
         clearButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         clearButton.setToolTipText("Clear all subjects from the table");
 
+        JButton predictButton = new JButton("Predict Attendance");
+        predictButton.setBackground(new Color(142, 68, 173));
+        predictButton.setForeground(Color.WHITE);
+        predictButton.setFocusPainted(false);
+        predictButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        predictButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        predictButton.setToolTipText("Predict attendance after N more classes");
+
         actionPanel.add(deleteButton);
         actionPanel.add(clearButton);
+        actionPanel.add(predictButton);
 
         overallAttendanceLabel = new JLabel("Overall Attendance: 0.00% (0 / 0)");
         overallAttendanceLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -477,6 +486,31 @@ public class AttendanceCalculator extends JFrame {
             if (confirm == JOptionPane.YES_OPTION) {
                 tableModel.setRowCount(0);
                 updateOverallAttendance();
+            }
+        });
+
+        predictButton.addActionListener(e -> {
+            int selectedRow = subjectTable.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a subject row to predict.", "Predict", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String input = JOptionPane.showInputDialog(this, "Enter number of future classes to predict:", "10");
+            if (input == null) return;
+            try {
+                int futureClasses = Integer.parseInt(input.trim());
+                int modelRow = subjectTable.convertRowIndexToModel(selectedRow);
+                int total = (int) tableModel.getValueAt(modelRow, 1);
+                int attended = (int) tableModel.getValueAt(modelRow, 2);
+                String subject = (String) tableModel.getValueAt(modelRow, 0);
+                double predictedPct = ((double) (attended + futureClasses) / (total + futureClasses)) * 100;
+                JOptionPane.showMessageDialog(this, String.format(
+                    "Prediction for %s after %d more classes (attending all):\n\nCurrent: %d/%d (%.2f%%)\nPredicted: %d/%d (%.2f%%)",
+                    subject, futureClasses, attended, total, ((double)attended/total)*100,
+                    attended + futureClasses, total + futureClasses, predictedPct),
+                    "Attendance Prediction", JOptionPane.INFORMATION_MESSAGE);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid number.", "Predict Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
