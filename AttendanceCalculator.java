@@ -5,6 +5,7 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class AttendanceCalculator extends JFrame {
     private static final String APP_VERSION = "2.1.0";
@@ -19,6 +20,7 @@ public class AttendanceCalculator extends JFrame {
     private boolean autoSave = true;
     private boolean darkMode = false;
     private String databaseFile = "attendance_database.csv";
+    private Stack<Object[][]> undoStack = new Stack<>();
 
     public AttendanceCalculator() {
         setTitle("Attendance Calculator Pro v" + APP_VERSION);
@@ -169,6 +171,13 @@ public class AttendanceCalculator extends JFrame {
                     tableModel.removeRow(modelRow);
                     updateOverallAttendance();
                 }
+            }
+        });
+        inputMap.put(KeyStroke.getKeyStroke("control Z"), "undo");
+        actionMap.put("undo", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                undoLastAction();
             }
         });
         inputMap.put(KeyStroke.getKeyStroke("F1"), "showHelp");
@@ -537,6 +546,7 @@ public class AttendanceCalculator extends JFrame {
                     String.format("%.0f%%", required),
                     status
             };
+            saveUndoState();
             tableModel.addRow(row);
             updateOverallAttendance();
 
@@ -610,6 +620,32 @@ public class AttendanceCalculator extends JFrame {
         } catch (java.awt.print.PrinterException ex) {
             JOptionPane.showMessageDialog(this, "Printing failed: " + ex.getMessage(), "Print Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void saveUndoState() {
+        int rowCount = tableModel.getRowCount();
+        int colCount = tableModel.getColumnCount();
+        Object[][] state = new Object[rowCount][colCount];
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < colCount; j++) {
+                state[i][j] = tableModel.getValueAt(i, j);
+            }
+        }
+        undoStack.push(state);
+        if (undoStack.size() > 20) undoStack.remove(0);
+    }
+
+    private void undoLastAction() {
+        if (undoStack.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nothing to undo.", "Undo", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        Object[][] prevState = undoStack.pop();
+        tableModel.setRowCount(0);
+        for (Object[] row : prevState) {
+            tableModel.addRow(row);
+        }
+        updateOverallAttendance();
     }
 
     private void saveData() {
