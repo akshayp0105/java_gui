@@ -93,7 +93,29 @@ public class AttendanceCalculator extends JFrame {
             darkMode = darkModeMenuItem.isSelected();
             applyDarkMode(darkMode);
         });
-        viewMenu.add(darkModeMenuItem);
+
+        inputMap.put(KeyStroke.getKeyStroke("UP"), "prevField");
+        actionMap.put("prevField", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Component focused = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+                if (focused == totalClassesField) subjectField.requestFocus();
+                else if (focused == attendedClassesField) totalClassesField.requestFocus();
+                else if (focused == requiredPercentageField) attendedClassesField.requestFocus();
+            }
+        });
+        inputMap.put(KeyStroke.getKeyStroke("DOWN"), "nextField");
+        actionMap.put("nextField", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Component focused = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+                if (focused == subjectField) totalClassesField.requestFocus();
+                else if (focused == totalClassesField) attendedClassesField.requestFocus();
+                else if (focused == attendedClassesField) requiredPercentageField.requestFocus();
+                else if (focused == requiredPercentageField) calculateAndAdd();
+            }
+        });
+
 
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
