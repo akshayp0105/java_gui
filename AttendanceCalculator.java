@@ -44,6 +44,15 @@ public class AttendanceCalculator extends JFrame {
             }
         });
 
+        addWindowStateListener(e -> {
+            if ((e.getOldState() & java.awt.Frame.ICONIFIED) == 0 && (e.getNewState() & java.awt.Frame.ICONIFIED) != 0) {
+                if (minimizeToTrayMenuItem.isSelected() && java.awt.SystemTray.isSupported()) {
+                    setVisible(false);
+                    JOptionPane.showMessageDialog(null, "App minimized to system tray.\nRight-click tray icon to restore or exit.", "System Tray", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+
         // Header Panel
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(new Color(52, 152, 219));
@@ -93,6 +102,11 @@ public class AttendanceCalculator extends JFrame {
             darkMode = darkModeMenuItem.isSelected();
             applyDarkMode(darkMode);
         });
+        viewMenu.add(darkModeMenuItem);
+
+        JCheckBoxMenuItem minimizeToTrayMenuItem = new JCheckBoxMenuItem("Minimize to System Tray", false);
+        minimizeToTrayMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        viewMenu.add(minimizeToTrayMenuItem);
 
         inputMap.put(KeyStroke.getKeyStroke("UP"), "prevField");
         actionMap.put("prevField", new AbstractAction() {
