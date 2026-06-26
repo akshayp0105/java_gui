@@ -169,6 +169,12 @@ public class AttendanceCalculator extends JFrame {
         sortByStatus.addActionListener(e -> subjectTable.getRowSorter().setSortKeys(java.util.List.of(new javax.swing.RowSorter.SortKey(5, javax.swing.SortOrder.ASCENDING))));
         viewMenu.add(sortByStatus);
 
+        viewMenu.addSeparator();
+        JMenuItem statsItem = new JMenuItem("Show Statistics Chart");
+        statsItem.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        statsItem.addActionListener(e -> showStatisticsChart());
+        viewMenu.add(statsItem);
+
         inputMap.put(KeyStroke.getKeyStroke("UP"), "prevField");
         actionMap.put("prevField", new AbstractAction() {
             @Override
@@ -908,6 +914,51 @@ public class AttendanceCalculator extends JFrame {
         } catch (java.awt.print.PrinterException ex) {
             JOptionPane.showMessageDialog(this, "Printing failed: " + ex.getMessage(), "Print Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void showStatisticsChart() {
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No data available for statistics.", "Statistics", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        JFrame chartFrame = new JFrame("Attendance Statistics Chart");
+        chartFrame.setSize(600, 400);
+        chartFrame.setLocationRelativeTo(this);
+
+        JPanel chartPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                int rows = tableModel.getRowCount();
+                int barWidth = Math.max(30, (getWidth() - 80) / rows);
+                int maxHeight = getHeight() - 80;
+                for (int i = 0; i < rows; i++) {
+                    String name = (String) tableModel.getValueAt(i, 0);
+                    if (name.length() > 8) name = name.substring(0, 8) + "..";
+                    double pct = Double.parseDouble(((String) tableModel.getValueAt(i, 3)).replace("%", ""));
+                    int barHeight = (int) (pct / 100.0 * maxHeight);
+                    int x = 50 + i * barWidth;
+                    int y = getHeight() - 40 - barHeight;
+                    if (pct >= 75) g2d.setColor(new Color(39, 174, 96));
+                    else if (pct >= 60) g2d.setColor(new Color(241, 196, 15));
+                    else g2d.setColor(new Color(192, 57, 43));
+                    g2d.fillRoundRect(x, y, barWidth - 5, barHeight, 4, 4);
+                    g2d.setColor(Color.BLACK);
+                    g2d.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+                    FontMetrics fm = g2d.getFontMetrics();
+                    int nameWidth = fm.stringWidth(name);
+                    g2d.drawString(name, x + (barWidth - 5 - nameWidth) / 2, getHeight() - 25);
+                    g2d.drawString(String.format("%.0f%%", pct), x + (barWidth - 5 - fm.stringWidth(String.format("%.0f%%", pct))) / 2, y - 5);
+                }
+                g2d.setColor(Color.GRAY);
+                g2d.drawLine(45, getHeight() - 40, getWidth() - 10, getHeight() - 40);
+            }
+        };
+        chartPanel.setBackground(Color.WHITE);
+        chartFrame.add(chartPanel);
+        chartFrame.setVisible(true);
     }
 
     private void showWeeklySummary() {
