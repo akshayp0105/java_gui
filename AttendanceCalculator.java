@@ -262,6 +262,24 @@ public class AttendanceCalculator extends JFrame {
                 undoLastAction();
             }
         });
+        inputMap.put(KeyStroke.getKeyStroke("control D"), "duplicateRow");
+        actionMap.put("duplicateRow", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                int selectedRow = subjectTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int modelRow = subjectTable.convertRowIndexToModel(selectedRow);
+                    Object[] rowData = new Object[tableModel.getColumnCount()];
+                    for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                        rowData[j] = tableModel.getValueAt(modelRow, j);
+                    }
+                    rowData[0] = rowData[0] + " (Copy)";
+                    saveUndoState();
+                    tableModel.addRow(rowData);
+                    updateOverallAttendance();
+                }
+            }
+        });
         inputMap.put(KeyStroke.getKeyStroke("F1"), "showHelp");
         actionMap.put("showHelp", new AbstractAction() {
             @Override
