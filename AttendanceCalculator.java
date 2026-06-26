@@ -288,7 +288,7 @@ public class AttendanceCalculator extends JFrame {
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return column == 0 || column == 1 || column == 2;
             }
         };
         subjectTable = new JTable(tableModel);
@@ -297,6 +297,34 @@ public class AttendanceCalculator extends JFrame {
         subjectTable.setRowSorter(new javax.swing.table.TableRowSorter<>(tableModel));
         subjectTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
         subjectTable.getTableHeader().setBackground(new Color(236, 240, 241));
+
+        tableModel.addTableModelListener(e -> {
+            if (e.getType() == javax.swing.event.TableModelEvent.UPDATE) {
+                int row = e.getFirstRow();
+                if (row >= 0 && row < tableModel.getRowCount()) {
+                    try {
+                        int total = Integer.parseInt(tableModel.getValueAt(row, 1).toString());
+                        int attended = Integer.parseInt(tableModel.getValueAt(row, 2).toString());
+                        if (total > 0 && attended >= 0 && attended <= total) {
+                            double pct = ((double) attended / total) * 100;
+                            tableModel.setValueAt(String.format("%.2f%%", pct), row, 3);
+                            double req = Double.parseDouble(tableModel.getValueAt(row, 4).toString().replace("%", ""));
+                            String status;
+                            if (pct >= req) {
+                                int canMiss = (int) Math.floor(((double) attended * 100 / req) - total);
+                                status = canMiss > 0 ? "Safe! Can miss " + canMiss + " classes." : "On track.";
+                            } else {
+                                double r = req / 100.0;
+                                int needed = (int) Math.ceil((r * total - attended) / (1 - r));
+                                status = "Alert! Need " + needed + " more.";
+                            }
+                            tableModel.setValueAt(status, row, 5);
+                            updateOverallAttendance();
+                        }
+                    } catch (Exception ignored) {}
+                }
+            }
+        });
         subjectTable.setSelectionBackground(new Color(189, 195, 199));
 
         // Custom renderer for row colors based on attendance percentage
