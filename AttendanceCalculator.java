@@ -418,6 +418,15 @@ public class AttendanceCalculator extends JFrame {
         actionPanel.add(clearButton);
         actionPanel.add(predictButton);
 
+        JButton customPctButton = new JButton("Set Custom %");
+        customPctButton.setBackground(new Color(211, 84, 0));
+        customPctButton.setForeground(Color.WHITE);
+        customPctButton.setFocusPainted(false);
+        customPctButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        customPctButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        customPctButton.setToolTipText("Set custom required percentage for selected subject");
+        actionPanel.add(customPctButton);
+
         overallAttendanceLabel = new JLabel("Overall Attendance: 0.00% (0 / 0)");
         overallAttendanceLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         overallAttendanceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -513,9 +522,43 @@ public class AttendanceCalculator extends JFrame {
                 JOptionPane.showMessageDialog(this, "Please enter a valid number.", "Predict Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-    }
 
-    private void applyDarkMode(boolean dark) {
+        customPctButton.addActionListener(e -> {
+            int selectedRow = subjectTable.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a subject row.", "Custom %", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String input = JOptionPane.showInputDialog(this, "Enter custom required percentage:", "75");
+            if (input == null) return;
+            try {
+                double customPct = Double.parseDouble(input.trim());
+                if (customPct < 0 || customPct > 100) {
+                    JOptionPane.showMessageDialog(this, "Percentage must be between 0 and 100.", "Custom % Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int modelRow = subjectTable.convertRowIndexToModel(selectedRow);
+                int total = (int) tableModel.getValueAt(modelRow, 1);
+                int attended = (int) tableModel.getValueAt(modelRow, 2);
+                double currentPct = ((double) attended / total) * 100;
+                String status;
+                if (currentPct >= customPct) {
+                    int canMiss = (int) Math.floor(((double) attended * 100 / customPct) - total);
+                    status = canMiss > 0 ? "Safe! You can miss " + canMiss + " classes." : "On track.";
+                } else {
+                    double r = customPct / 100.0;
+                    double needed = (r * total - attended) / (1 - r);
+                    int neededClasses = (int) Math.ceil(needed);
+                    status = "Alert! Need " + neededClasses + " more classes.";
+                }
+                tableModel.setValueAt(String.format("%.0f%%", customPct), modelRow, 4);
+                tableModel.setValueAt(status, modelRow, 5);
+                updateOverallAttendance();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid number.", "Custom % Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
         Color bg = dark ? new Color(43, 43, 43) : UIManager.getColor("Panel.background");
         Color fg = dark ? Color.WHITE : Color.BLACK;
         Color tableBg = dark ? new Color(55, 55, 55) : Color.WHITE;
