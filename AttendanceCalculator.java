@@ -511,6 +511,10 @@ public class AttendanceCalculator extends JFrame {
         rowCountLabel.setForeground(Color.WHITE);
         rowCountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         statusBar.add(rowCountLabel);
+        JLabel lastModifiedLabel = new JLabel("Last Modified: Never");
+        lastModifiedLabel.setForeground(Color.WHITE);
+        lastModifiedLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        statusBar.add(lastModifiedLabel);
         JLabel statusTimeLabel = new JLabel();
         statusTimeLabel.setForeground(Color.WHITE);
         statusTimeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -803,6 +807,7 @@ public class AttendanceCalculator extends JFrame {
 
     private void saveData() {
         saveDataQuiet();
+        lastModifiedLabel.setText("Last Modified: " + java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")));
         JOptionPane.showMessageDialog(this, "Data saved successfully!", "Save", JOptionPane.INFORMATION_MESSAGE);
     }
 
