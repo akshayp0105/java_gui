@@ -124,6 +124,35 @@ public class AttendanceCalculator extends JFrame {
         });
         viewMenu.add(themeColorItem);
 
+        JMenuItem goalSetter = new JMenuItem("Set Attendance Goal");
+        goalSetter.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        goalSetter.addActionListener(e -> {
+            String input = JOptionPane.showInputDialog(this, "Enter your target attendance percentage:", "90");
+            if (input != null) {
+                try {
+                    double goal = Double.parseDouble(input.trim());
+                    if (goal >= 0 && goal <= 100) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("=== Attendance Goal Tracker ===\n");
+                        sb.append("Target: ").append(String.format("%.0f%%", goal)).append("\n\n");
+                        int count = 0, onTrack = 0;
+                        for (int i = 0; i < tableModel.getRowCount(); i++) {
+                            String subject = (String) tableModel.getValueAt(i, 0);
+                            double pct = Double.parseDouble(((String) tableModel.getValueAt(i, 3)).replace("%", ""));
+                            count++;
+                            if (pct >= goal) onTrack++;
+                            sb.append(String.format("%s: %.1f%% - %s%n", subject, pct, pct >= goal ? "ON TRACK" : "BEHIND"));
+                        }
+                        sb.append(String.format("\n%d/%d subjects meeting goal", onTrack, count));
+                        JOptionPane.showMessageDialog(this, sb.toString(), "Attendance Goal", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid percentage.", "Goal Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        viewMenu.add(goalSetter);
+
         inputMap.put(KeyStroke.getKeyStroke("UP"), "prevField");
         actionMap.put("prevField", new AbstractAction() {
             @Override
