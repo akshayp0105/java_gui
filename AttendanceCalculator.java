@@ -21,6 +21,7 @@ public class AttendanceCalculator extends JFrame {
     private boolean darkMode = false;
     private String databaseFile = "attendance_database.csv";
     private Stack<Object[][]> undoStack = new Stack<>();
+    private java.util.Map<String, java.util.List<Double>> attendanceHistory = new java.util.HashMap<>();
 
     public AttendanceCalculator() {
         setTitle("Attendance Calculator Pro v" + APP_VERSION);
@@ -284,7 +285,7 @@ public class AttendanceCalculator extends JFrame {
         inputPanel.add(calculateButton, gbc);
 
         // Center Panel for Table
-        String[] columns = {"Subject", "Total", "Attended", "Current %", "Required %", "Status / Needed"};
+        String[] columns = {"Subject", "Total", "Attended", "Current %", "Required %", "Status / Needed", "Trend"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -654,13 +655,27 @@ public class AttendanceCalculator extends JFrame {
                 status = "Alert! Need to attend " + neededClasses + " more classes.";
             }
 
+            String trend;
+            java.util.List<Double> history = attendanceHistory.getOrDefault(subject, new ArrayList<>());
+            if (history.size() >= 2) {
+                double lastPct = history.get(history.size() - 1);
+                if (currentPercentage > lastPct) trend = "UP";
+                else if (currentPercentage < lastPct) trend = "DOWN";
+                else trend = "STABLE";
+            } else {
+                trend = "NEW";
+            }
+            history.add(currentPercentage);
+            attendanceHistory.put(subject, history);
+
             Object[] row = {
                     subject,
                     total,
                     attended,
                     currentPercentageStr,
                     String.format("%.0f%%", required),
-                    status
+                    status,
+                    trend
             };
             saveUndoState();
             tableModel.addRow(row);
