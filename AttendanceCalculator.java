@@ -153,6 +153,22 @@ public class AttendanceCalculator extends JFrame {
         });
         viewMenu.add(goalSetter);
 
+        viewMenu.addSeparator();
+        JMenuItem sortByName = new JMenuItem("Sort by Name");
+        sortByName.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        sortByName.addActionListener(e -> subjectTable.getRowSorter().setSortKeys(java.util.List.of(new javax.swing.RowSorter.SortKey(0, javax.swing.SortOrder.ASCENDING))));
+        viewMenu.add(sortByName);
+
+        JMenuItem sortByPct = new JMenuItem("Sort by Attendance %");
+        sortByPct.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        sortByPct.addActionListener(e -> subjectTable.getRowSorter().setSortKeys(java.util.List.of(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.DESCENDING))));
+        viewMenu.add(sortByPct);
+
+        JMenuItem sortByStatus = new JMenuItem("Sort by Status");
+        sortByStatus.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        sortByStatus.addActionListener(e -> subjectTable.getRowSorter().setSortKeys(java.util.List.of(new javax.swing.RowSorter.SortKey(5, javax.swing.SortOrder.ASCENDING))));
+        viewMenu.add(sortByStatus);
+
         inputMap.put(KeyStroke.getKeyStroke("UP"), "prevField");
         actionMap.put("prevField", new AbstractAction() {
             @Override
