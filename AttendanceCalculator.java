@@ -108,6 +108,11 @@ public class AttendanceCalculator extends JFrame {
         minimizeToTrayMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         viewMenu.add(minimizeToTrayMenuItem);
 
+        JMenuItem weeklyTracker = new JMenuItem("Weekly Attendance Summary");
+        weeklyTracker.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        weeklyTracker.addActionListener(e -> showWeeklySummary());
+        viewMenu.add(weeklyTracker);
+
         inputMap.put(KeyStroke.getKeyStroke("UP"), "prevField");
         actionMap.put("prevField", new AbstractAction() {
             @Override
@@ -817,6 +822,30 @@ public class AttendanceCalculator extends JFrame {
         } catch (java.awt.print.PrinterException ex) {
             JOptionPane.showMessageDialog(this, "Printing failed: " + ex.getMessage(), "Print Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void showWeeklySummary() {
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No data available for weekly summary.", "Weekly Summary", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Weekly Attendance Summary ===\n");
+        sb.append("Date: ").append(java.time.LocalDate.now()).append("\n\n");
+        double totalPct = 0;
+        int count = 0;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            String subject = (String) tableModel.getValueAt(i, 0);
+            int total = (int) tableModel.getValueAt(i, 1);
+            int attended = (int) tableModel.getValueAt(i, 2);
+            double pct = ((double) attended / total) * 100;
+            totalPct += pct;
+            count++;
+            String status = pct >= 75 ? "GOOD" : "NEEDS IMPROVEMENT";
+            sb.append(String.format("%s: %d/%d (%.1f%%) - %s%n", subject, attended, total, pct, status));
+        }
+        sb.append(String.format("\nOverall Average: %.2f%%", totalPct / count));
+        JOptionPane.showMessageDialog(this, sb.toString(), "Weekly Attendance Summary", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void saveUndoState() {
