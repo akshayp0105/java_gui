@@ -727,6 +727,18 @@ public class AttendanceCalculator extends JFrame {
                 return;
             }
 
+            boolean duplicate = false;
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                if (((String) tableModel.getValueAt(i, 0)).equalsIgnoreCase(subject)) {
+                    duplicate = true;
+                    break;
+                }
+            }
+            if (duplicate) {
+                int confirm = JOptionPane.showConfirmDialog(this, "Subject '" + subject + "' already exists. Add anyway?", "Duplicate Subject", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (confirm != JOptionPane.YES_OPTION) return;
+            }
+
             int total = Integer.parseInt(totalClassesField.getText().trim());
             int attended = Integer.parseInt(attendedClassesField.getText().trim());
             double required = Double.parseDouble(requiredPercentageField.getText().trim());
